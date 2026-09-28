@@ -651,7 +651,7 @@ class SplashController extends GetxController implements GetxService {
       moduleType == 'food' ? module.newVariation = true : module.newVariation = false;
       return module;
     }
-    return Module(newVariation: moduleType == 'food' || moduleType == 'laundry');
+    return Module(newVariation: moduleType == 'food');
   }
 
   Future<void> getModules({Map<String, String>? headers, DataSourceEnum dataSource = DataSourceEnum.local}) async {
