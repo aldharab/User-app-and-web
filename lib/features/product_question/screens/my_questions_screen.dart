@@ -129,7 +129,7 @@ class _MyQuestionsScreenState extends State<MyQuestionsScreen> {
                                 
                                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [
                                   OutlinedButton(
-                                    onPressed: () => Get.toNamed(RouteHelper.getItemDetailsRoute(question.itemId, question.item?.moduleType == 'food' || question.item?.moduleType == 'laundry')),
+                                    onPressed: () => Get.toNamed(RouteHelper.getItemDetailsRoute(question.itemId, question.item?.moduleType == 'food')),
                                     style: OutlinedButton.styleFrom(
                                       side: BorderSide(color: Theme.of(context).primaryColor),
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
