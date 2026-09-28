@@ -272,6 +272,257 @@ Future<Map<String, Map<String, String>>> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   Get.lazyPut(() => sharedPreferences);
 
+  final savedBaseUrl = sharedPreferences.getString(AppConstants.serverBaseUrl);
+  if (savedBaseUrl != null && savedBaseUrl.trim().isNotEmpty) {
+    AppConstants.baseUrl = savedBaseUrl.trim().replaceAll(RegExp(r'/+
+
+  const flutterSecureStorage = FlutterSecureStorage();
+  // Use Get.put (eager) so the instance is immediately available for Get.find().
+  Get.put<FlutterSecureStorage>(flutterSecureStorage);
+
+  // Migrate legacy 6ammart keys to suliman keys if needed
+  void migrateLegacyKey(String legacyKey, String newKey) {
+    if (sharedPreferences.containsKey(legacyKey) && !sharedPreferences.containsKey(newKey)) {
+      var val = sharedPreferences.get(legacyKey);
+      if (val is String) {
+        sharedPreferences.setString(newKey, val);
+      } else if (val is bool) {
+        sharedPreferences.setBool(newKey, val);
+      } else if (val is int) {
+        sharedPreferences.setInt(newKey, val);
+      } else if (val is double) {
+        sharedPreferences.setDouble(newKey, val);
+      } else if (val is List<String>) {
+        sharedPreferences.setStringList(newKey, val);
+      }
+    }
+  }
+  migrateLegacyKey('6ammart_token', AppConstants.token);
+  migrateLegacyKey('6ammart_user_address', AppConstants.userAddress);
+  migrateLegacyKey('6ammart_language_code', AppConstants.languageCode);
+  migrateLegacyKey('6ammart_theme', AppConstants.theme);
+  migrateLegacyKey('6ammart_cart_list', AppConstants.cartList);
+  migrateLegacyKey('6ammart_guest_id', AppConstants.guestId);
+
+  // Synchronize token between FlutterSecureStorage and SharedPreferences
+  String? secureToken;
+  try {
+    secureToken = await flutterSecureStorage.read(key: AppConstants.token);
+    if (secureToken == null || secureToken.isEmpty) {
+      secureToken = await flutterSecureStorage.read(key: '6ammart_token');
+    }
+  } catch (_) {}
+  String? spToken = sharedPreferences.getString(AppConstants.token);
+
+  if (secureToken != null && secureToken.isNotEmpty) {
+    if (spToken == null || spToken.isEmpty) {
+      await sharedPreferences.setString(AppConstants.token, secureToken);
+    }
+  } else if (spToken != null && spToken.isNotEmpty) {
+    try {
+      await flutterSecureStorage.write(key: AppConstants.token, value: spToken);
+    } catch (_) {}
+    secureToken = spToken;
+  }
+
+  // Purge any stored passwords from SharedPreferences
+  if (sharedPreferences.containsKey(AppConstants.userPassword)) {
+    await sharedPreferences.remove(AppConstants.userPassword);
+  }
+
+  Get.lazyPut(() => ApiClient(appBaseUrl: AppConstants.baseUrl, sharedPreferences: Get.find(), token: secureToken));
+
+  /// Repository interface
+  // Pass flutterSecureStorage directly — avoids nullable/non-nullable type mismatch with Get.find.
+  Get.put<AuthRepositoryInterface>(AuthRepository(apiClient: Get.find(), sharedPreferences: Get.find(), secureStorage: flutterSecureStorage));
+
+  Get.lazyPut<CheckoutRepositoryInterface>(() => CheckoutRepository(apiClient: Get.find(), sharedPreferences: Get.find()), fenix: true);
+  Get.lazyPut<LocationRepositoryInterface>(() => LocationRepository(apiClient: Get.find()), fenix: true);
+  Get.lazyPut<DeliverymanRegistrationRepositoryInterface>(() => DeliverymanRegistrationRepository(apiClient: Get.find(), sharedPreferences: Get.find()), fenix: true);
+  Get.lazyPut<StoreRegistrationRepositoryInterface>(() => StoreRegistrationRepository(apiClient: Get.find()), fenix: true);
+  Get.lazyPut<ParcelRepositoryInterface>(() => ParcelRepository(apiClient: Get.find()));
+  Get.lazyPut<AddressRepositoryInterface>(() => AddressRepository(apiClient: Get.find()));
+  Get.lazyPut<OrderRepositoryInterface>(() => OrderRepository(apiClient: Get.find()));
+  Get.lazyPut<PaymentRepositoryInterface>(() => PaymentRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<CampaignRepositoryInterface>(() => CampaignRepository(apiClient: Get.find()));
+  Get.lazyPut<ChatRepositoryInterface>(() => ChatRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<CouponRepositoryInterface>(() => CouponRepository(apiClient: Get.find()));
+  Get.lazyPut<FavouriteRepositoryInterface>(() => FavouriteRepository(apiClient: Get.find()));
+  Get.lazyPut<FlashSaleRepositoryInterface>(() => FlashSaleRepository(apiClient: Get.find()));
+  Get.lazyPut<HomeRepositoryInterface>(() => HomeRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<BannerRepositoryInterface>(() => BannerRepository(apiClient: Get.find()));
+  Get.lazyPut<HtmlRepositoryInterface>(() => HtmlRepository(apiClient: Get.find()));
+  Get.lazyPut<LanguageRepositoryInterface>(() => LanguageRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<NotificationRepositoryInterface>(() => NotificationRepository(sharedPreferences: Get.find(), apiClient: Get.find()));
+  Get.lazyPut<OnboardRepositoryInterface>(() => OnboardRepository());
+  Get.lazyPut<ProfileRepositoryInterface>(() => ProfileRepository(apiClient: Get.find()));
+  Get.lazyPut<SearchRepositoryInterface>(() => SearchRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<SplashRepositoryInterface>(() => SplashRepository(sharedPreferences: Get.find(), apiClient: Get.find()));
+  Get.lazyPut<ReviewRepositoryInterface>(() => ReviewRepository(apiClient: Get.find()));
+  Get.lazyPut<StoreRepositoryInterface>(() => StoreRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<WalletRepositoryInterface>(() => WalletRepository(sharedPreferences: Get.find(), apiClient: Get.find()));
+  Get.lazyPut<ItemRepositoryInterface>(() => ItemRepository(apiClient: Get.find()));
+  Get.lazyPut<CategoryRepositoryInterface>(() => CategoryRepository(apiClient: Get.find()));
+  Get.lazyPut<LoyaltyRepositoryInterface>(() => LoyaltyRepository(apiClient: Get.find()));
+  Get.lazyPut<ProductQuestionRepositoryInterface>(() => ProductQuestionRepository(apiClient: Get.find()));
+  Get.lazyPut<SuggestionRepositoryInterface>(() => SuggestionRepository(apiClient: Get.find()));
+  Get.lazyPut<ForumRepositoryInterface>(() => ForumRepository(apiClient: Get.find()));
+  Get.lazyPut<ReportRepositoryInterface>(() => ReportRepository(apiClient: Get.find()));
+  Get.lazyPut<ShelfRepositoryInterface>(() => ShelfRepository(apiClient: Get.find()));
+  Get.lazyPut<StoreCornerRepositoryInterface>(() => StoreCornerRepository(apiClient: Get.find()));
+  Get.lazyPut<SuperBannerRepositoryInterface>(() => SuperBannerRepository(apiClient: Get.find()));
+  Get.lazyPut<ServiceRepositoryInterface>(() => ServiceRepository(apiClient: Get.find()));
+
+  Get.lazyPut<CartRepositoryInterface>(() => CartRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<VerificationRepositoryInterface>(() => VerificationRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<BrandsRepositoryInterface>(() => BrandsRepository(apiClient: Get.find()));
+  Get.lazyPut<BusinessRepoInterface>(() => BusinessRepo(apiClient: Get.find()));
+  Get.lazyPut<AdvertisementRepositoryInterface>(() => AdvertisementRepository(apiClient: Get.find()));
+  Get.lazyPut<TaxiRepositoryInterface>(() => TaxiRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<TaxiHomeRepositoryInterface>(() => TaxiHomeRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<TaxiCartRepositoryInterface>(() => TaxiCartRepository(apiClient: Get.find()));
+  Get.lazyPut<TaxiVendorRepositoryInterface>(() => TaxiVendorRepository(apiClient: Get.find()));
+  Get.lazyPut<TaxiOrderRepositoryInterface>(() => TaxiOrderRepository(apiClient: Get.find()));
+  Get.lazyPut<TaxiFavouriteRepositoryInterface>(() => TaxiFavouriteRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.put<GlobalShoppingRepositoryInterface>(GlobalShoppingRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<ProRepositoryInterface>(() => ProRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut<ReelsRepositoryInterface>(() => ReelsRepository(apiClient: Get.find()), fenix: true);
+
+  /// Service Interface
+  Get.lazyPut<CheckoutServiceInterface>(() => CheckoutService(checkoutRepositoryInterface: Get.find()), fenix: true);
+  Get.lazyPut<AuthServiceInterface>(() => AuthService(authRepositoryInterface: Get.find()));
+  Get.lazyPut<LocationServiceInterface>(() => LocationService(locationRepoInterface: Get.find()), fenix: true);
+  Get.lazyPut<DeliverymanRegistrationServiceInterface>(() => DeliverymanRegistrationService(deliverymanRegistrationRepoInterface: Get.find(), authRepositoryInterface: Get.find()), fenix: true);
+  Get.lazyPut<StoreRegistrationServiceInterface>(() => StoreRegistrationService(deliverymanRegistrationRepositoryInterface: Get.find(), storeRegistrationRepoInterface: Get.find()), fenix: true);
+  Get.lazyPut<ParcelServiceInterface>(() => ParcelService(parcelRepositoryInterface: Get.find(), checkoutRepositoryInterface: Get.find()));
+  Get.lazyPut<AddressServiceInterface>(() => AddressService(addressRepoInterface: Get.find()));
+  Get.lazyPut<OrderServiceInterface>(() => OrderService(orderRepositoryInterface: Get.find()));
+  Get.lazyPut<PaymentServiceInterface>(() => PaymentService(paymentRepositoryInterface: Get.find()));
+  Get.lazyPut<CampaignServiceInterface>(() => CampaignService(campaignRepositoryInterface: Get.find()));
+  Get.lazyPut<ChatServiceInterface>(() => ChatService(chatRepositoryInterface: Get.find()));
+  Get.lazyPut<CouponServiceInterface>(() => CouponService(couponRepositoryInterface: Get.find()));
+  Get.lazyPut<FavouriteServiceInterface>(() => FavouriteService(favouriteRepositoryInterface: Get.find()));
+  Get.lazyPut<HomeServiceInterface>(() => HomeService(homeRepositoryInterface: Get.find()));
+  Get.lazyPut<FlashSaleServiceInterface>(() => FlashSaleService(flashSaleRepositoryInterface: Get.find()));
+  Get.lazyPut<BannerServiceInterface>(() => BannerService(bannerRepositoryInterface: Get.find()));
+  Get.lazyPut<HtmlServiceInterface>(() => HtmlService(htmlRepositoryInterface: Get.find()));
+  Get.lazyPut<LanguageServiceInterface>(() => LanguageService(languageRepositoryInterface: Get.find()));
+  Get.lazyPut<NotificationServiceInterface>(() => NotificationService(notificationRepositoryInterface: Get.find()));
+  Get.lazyPut<OnboardServiceInterface>(() => OnboardService(onboardRepositoryInterface: Get.find()));
+  Get.lazyPut<ProfileServiceInterface>(() => ProfileService(profileRepositoryInterface: Get.find()));
+
+  Get.lazyPut<SearchServiceInterface>(() => SearchService(searchRepositoryInterface: Get.find()));
+  Get.lazyPut<SplashServiceInterface>(() => SplashService(splashRepositoryInterface: Get.find()));
+  Get.lazyPut<ReviewServiceInterface>(() => ReviewService(reviewRepositoryInterface: Get.find()));
+  Get.lazyPut<StoreServiceInterface>(() => StoreService(storeRepositoryInterface: Get.find()));
+  Get.lazyPut<WalletServiceInterface>(() => WalletService(walletRepositoryInterface: Get.find()));
+  Get.lazyPut<ItemServiceInterface>(() => ItemService(itemRepositoryInterface: Get.find()));
+  Get.lazyPut<CategoryServiceInterface>(() => CategoryService(categoryRepositoryInterface: Get.find()));
+  Get.lazyPut<LoyaltyServiceInterface>(() => LoyaltyService(loyaltyRepositoryInterface: Get.find()));
+  Get.lazyPut<ProductQuestionServiceInterface>(() => ProductQuestionService(productQuestionRepositoryInterface: Get.find()));
+  Get.lazyPut<SuggestionServiceInterface>(() => SuggestionService(suggestionRepositoryInterface: Get.find()));
+  Get.lazyPut<ForumServiceInterface>(() => ForumService(forumRepository: Get.find()));
+  Get.lazyPut<ReportServiceInterface>(() => ReportService(reportRepositoryInterface: Get.find()));
+  Get.lazyPut<ShelfServiceInterface>(() => ShelfService(shelfRepositoryInterface: Get.find()));
+  Get.lazyPut<ServiceServiceInterface>(() => ServiceService(serviceRepositoryInterface: Get.find()));
+  Get.lazyPut<StoreCornerServiceInterface>(() => StoreCornerService(storeCornerRepositoryInterface: Get.find()));
+  Get.lazyPut<CartServiceInterface>(() => CartService(cartRepositoryInterface: Get.find()));
+  Get.lazyPut<VerificationServiceInterface>(() => VerificationService(verificationRepoInterface: Get.find(), authRepoInterface: Get.find()));
+  Get.lazyPut<BrandsServiceInterface>(() => BrandsService(brandsRepositoryInterface: Get.find()));
+  Get.lazyPut<BusinessServiceInterface>(() => BusinessService(businessRepoInterface: Get.find()));
+  Get.lazyPut<AdvertisementServiceInterface>(() => AdvertisementService(advertisementRepositoryInterface: Get.find()));
+  Get.lazyPut<TaxiLocationServiceInterface>(() => TaxiLocationService(taxiRepositoryInterface: Get.find()));
+  Get.lazyPut<TaxiHomeServiceInterface>(() => TaxiHomeService(taxiHomeRepositoryInterface: Get.find()));
+  Get.lazyPut<TaxiCartServiceInterface>(() => TaxiCartService(taxiCartRepositoryInterface: Get.find()));
+  Get.lazyPut<TaxiVendorServiceInterface>(() => TaxiVendorService(taxiVendorRepositoryInterface: Get.find()));
+  Get.lazyPut<TaxiOrderServiceInterface>(() => TaxiOrderService(taxiOrderRepositoryInterface: Get.find()));
+  Get.lazyPut<TaxiFavouriteServiceInterface>(() => TaxiFavouriteService(taxiFavouriteRepositoryInterface: Get.find()));
+  Get.put<GlobalShoppingServiceInterface>(GlobalShoppingService(repo: Get.find<GlobalShoppingRepositoryInterface>()));
+  Get.lazyPut<ProServiceInterface>(() => ProService(proRepositoryInterface: Get.find()));
+  Get.lazyPut<ReelsServiceInterface>(() => ReelsService(reelsRepositoryInterface: Get.find()), fenix: true);
+
+    Get.lazyPut(() => CustomerCreditController(customerCreditServiceInterface: Get.find()));
+
+  /// Controller
+  Get.lazyPut(() => ThemeController(sharedPreferences: Get.find()));
+  Get.lazyPut(() => SplashController(splashServiceInterface: Get.find()));
+  Get.lazyPut(() => ProController(proServiceInterface: Get.find()));
+  Get.lazyPut(() => AddressController(addressServiceInterface: Get.find()));
+  Get.lazyPut(() => LocationController(locationServiceInterface: Get.find()));
+  Get.lazyPut(() => LocalizationController(languageServiceInterface: Get.find()));
+  Get.lazyPut(() => OnBoardingController(onboardServiceInterface: Get.find()));
+  Get.lazyPut(() => AuthController(authServiceInterface: Get.find()));
+  Get.lazyPut(() => DeliverymanRegistrationController(deliverymanRegistrationServiceInterface: Get.find()), fenix: true);
+  Get.lazyPut(() => StoreRegistrationController(storeRegistrationServiceInterface: Get.find(), locationServiceInterface: Get.find()), fenix: true);
+  Get.lazyPut(() => ProfileController(profileServiceInterface: Get.find()));
+  Get.lazyPut(() => BannerController(bannerServiceInterface: Get.find()));
+  Get.lazyPut(() => CategoryController(categoryServiceInterface: Get.find()));
+  Get.lazyPut(() => ItemController(itemServiceInterface: Get.find()));
+  Get.lazyPut(() => CartController(cartServiceInterface: Get.find()));
+  Get.lazyPut(() => StoreController(storeServiceInterface: Get.find()));
+  Get.lazyPut(() => FavouriteController(favouriteServiceInterface: Get.find()));
+  Get.lazyPut(() => WishListController(sharedPreferences: Get.find()));
+  Get.lazyPut(() => HomeController(homeServiceInterface: Get.find()));
+  Get.lazyPut(() => ReelsController(reelsServiceInterface: Get.find()), fenix: true);
+  Get.lazyPut(() => SearchController(searchServiceInterface: Get.find()));
+  Get.lazyPut(() => SmartShoppingListController(searchServiceInterface: Get.find()));
+  Get.lazyPut(() => CouponController(couponServiceInterface: Get.find()));
+  Get.lazyPut(() => OrderController(orderServiceInterface: Get.find()));
+  Get.lazyPut(() => NotificationController(notificationServiceInterface: Get.find()));
+  Get.lazyPut(() => CampaignController(campaignServiceInterface: Get.find()));
+  Get.lazyPut(() => ParcelController(parcelServiceInterface: Get.find()));
+  Get.lazyPut(() => WalletController(walletServiceInterface: Get.find()));
+  Get.lazyPut(() => ChatController(chatServiceInterface: Get.find()));
+  Get.lazyPut(() => FlashSaleController(flashSaleServiceInterface: Get.find()));
+  Get.lazyPut(() => CheckoutController(checkoutServiceInterface: Get.find()), fenix: true);
+  Get.lazyPut(() => PaymentController(paymentServiceInterface: Get.find()));
+  Get.lazyPut(() => HtmlController(htmlServiceInterface: Get.find()));
+  Get.lazyPut(() => ReviewController(reviewServiceInterface: Get.find()));
+  Get.lazyPut(() => CategoryController(categoryServiceInterface: Get.find()));
+  Get.lazyPut(() => ProductQuestionController(productQuestionServiceInterface: Get.find()));
+  Get.lazyPut(() => SuggestionController(suggestionServiceInterface: Get.find()));
+  Get.lazyPut(() => ForumController(forumServiceInterface: Get.find()));
+  Get.lazyPut(() => ReportController(reportServiceInterface: Get.find()));
+  Get.lazyPut(() => LoyaltyController(loyaltyServiceInterface: Get.find()));
+  Get.lazyPut(() => VerificationController(verificationServiceInterface: Get.find()));
+  Get.lazyPut(() => BrandsController(brandsServiceInterface: Get.find()));
+  Get.lazyPut(() => TrendsController(apiClient: Get.find()));
+  Get.lazyPut(() => BusinessController(businessServiceInterface: Get.find()));
+  Get.lazyPut(() => AdvertisementController(advertisementServiceInterface: Get.find()));
+  Get.lazyPut(() => ShelfController(shelfServiceInterface: Get.find()));
+  Get.lazyPut(() => StoreCornerController(storeCornerRepositoryInterface: Get.find()));
+  Get.lazyPut(() => SuperBannerController(superBannerRepositoryInterface: Get.find()));
+  Get.lazyPut(() => ServiceController(serviceServiceInterface: Get.find()));
+  Get.lazyPut(() => TaxiLocationController(taxiLocationServiceInterface: Get.find()));
+  Get.lazyPut(() => TaxiHomeController(taxiHomeServiceInterface: Get.find()));
+  Get.lazyPut(() => TaxiCartController(taxiCartServiceInterface: Get.find()));
+  Get.lazyPut(() => TaxiVendorController(taxiVendorServiceInterface: Get.find()));
+  Get.lazyPut(() => TaxiOrderController(taxiOrderServiceInterface: Get.find()));
+  Get.lazyPut(() => TaxiFavouriteController(taxiFavouriteServiceInterface: Get.find()));
+  Get.lazyPut(() => GlobalBrowseController(service: Get.find<GlobalShoppingServiceInterface>()));
+  Get.lazyPut(() => GlobalCartController(service: Get.find<GlobalShoppingServiceInterface>()));
+  Get.lazyPut(() => GlobalOrderController(service: Get.find<GlobalShoppingServiceInterface>()));
+  Get.lazyPut(() => ItemHistoryController(sharedPreferences: Get.find()));
+  Get.lazyPut(() => ContactShareController(apiClient: Get.find()));
+
+  /// Retrieving localized data
+  Map<String, Map<String, String>> languages = {};
+  for(LanguageModel languageModel in AppConstants.languages) {
+    String jsonStringValues =  await rootBundle.loadString('assets/language/${languageModel.languageCode}.json');
+    Map<String, dynamic> mappedJson = jsonDecode(jsonStringValues);
+    Map<String, String> json = {};
+    mappedJson.forEach((key, value) {
+      json[key] = value.toString();
+    });
+    languages['${languageModel.languageCode}_${languageModel.countryCode}'] = json;
+  }
+  return languages;
+}
+), '');
+  } else {
+    AppConstants.baseUrl = AppConstants.defaultBaseUrl;
+  }
+
   const flutterSecureStorage = FlutterSecureStorage();
   // Use Get.put (eager) so the instance is immediately available for Get.find().
   Get.put<FlutterSecureStorage>(flutterSecureStorage);
