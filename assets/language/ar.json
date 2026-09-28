@@ -2558,5 +2558,13 @@
   "fbs_consolidated_delivery_title": "شحنة موحدة من مخزن المنصة المركزي (FBS ⚡)",
   "fbs_consolidated_delivery_notice": "تم تجميع منتجاتك من عدة متاجر في طرد واحد من المستودع المركزي وتوفير رسوم التوصيل المتعددة.",
   "auto_applied": "تلقائي",
-  "our_new": "جديدنا"
+  "our_new": "جديدنا",
+  "server_environment": "بيئة الاتصال",
+  "external_developer": "المطور الخارجي",
+  "production_version": "النسخة التشغيلية",
+  "final_test_environment": "بيئة الاختبار النهائي",
+  "custom_server_url": "رابط مخصص",
+  "server_url": "رابط الخادم",
+  "invalid_server_url": "رابط الخادم غير صالح",
+  "save_and_restart": "حفظ وإعادة التشغيل"
 }
