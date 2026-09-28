@@ -91,7 +91,7 @@ class UserReviewWidget extends StatelessWidget {
               int? itemId = review.item?.id ?? review.itemId;
               String? moduleType = review.item?.moduleType ?? review.moduleType;
               if(itemId != null) {
-                Get.toNamed(RouteHelper.getItemDetailsRoute(itemId, moduleType == 'food' || moduleType == 'laundry'));
+                Get.toNamed(RouteHelper.getItemDetailsRoute(itemId, moduleType == 'food'));
               }
             },
             style: ElevatedButton.styleFrom(
