@@ -18,6 +18,7 @@ import 'package:suliman/util/app_constants.dart';
 import 'package:suliman/util/dimensions.dart';
 import 'package:suliman/common/widgets/confirmation_dialog.dart';
 import 'package:suliman/features/profile/controllers/profile_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suliman/util/images.dart';
 import 'package:suliman/util/styles.dart';
 
@@ -120,6 +121,13 @@ class _SettingPageState extends State<SettingPage> {
               onTap: () {
                 _manageLanguageFunctionality();
               }),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
+
+          ProfileButtonWidget(
+              icon: Icons.dns_outlined,
+              title: 'server_environment'.tr,
+              languageName: AppConstants.baseUrl,
+              onTap: _showServerEnvironmentDialog),
           const SizedBox(height: Dimensions.paddingSizeSmall),
 
           // GetBuilder<ThemeController>(builder: (themeController) {
@@ -583,6 +591,108 @@ class _SettingPageState extends State<SettingPage> {
           ]),
         ]),
       ),
+    );
+  }
+
+
+  void _showServerEnvironmentDialog() {
+    final sharedPreferences = Get.find<SharedPreferences>();
+    final currentUrl = sharedPreferences.getString(AppConstants.serverBaseUrl) ?? AppConstants.baseUrl;
+    final customController = TextEditingController(
+      text: [
+        AppConstants.externalDeveloperBaseUrl,
+        AppConstants.productionBaseUrl,
+        AppConstants.finalTestingBaseUrl,
+      ].contains(currentUrl) ? '' : currentUrl,
+    );
+    String selectedUrl = currentUrl;
+
+    Get.dialog(
+      StatefulBuilder(builder: (context, setDialogState) {
+        Widget option(String title, String url) => RadioListTile<String>(
+          value: url,
+          groupValue: selectedUrl,
+          title: Text(title),
+          subtitle: Text(url, textDirection: TextDirection.ltr),
+          onChanged: (value) => setDialogState(() => selectedUrl = value!),
+        );
+
+        return AlertDialog(
+          title: Text('server_environment'.tr),
+          content: SingleChildScrollView(
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              option('external_developer'.tr, AppConstants.externalDeveloperBaseUrl),
+              option('production_version'.tr, AppConstants.productionBaseUrl),
+              option('final_test_environment'.tr, AppConstants.finalTestingBaseUrl),
+              RadioListTile<String>(
+                value: 'custom',
+                groupValue: [
+                  AppConstants.externalDeveloperBaseUrl,
+                  AppConstants.productionBaseUrl,
+                  AppConstants.finalTestingBaseUrl,
+                ].contains(selectedUrl) ? selectedUrl : 'custom',
+                title: Text('custom_server_url'.tr),
+                onChanged: (_) => setDialogState(() => selectedUrl = 'custom'),
+              ),
+              if (selectedUrl == 'custom')
+                TextField(
+                  controller: customController,
+                  textDirection: TextDirection.ltr,
+                  keyboardType: TextInputType.url,
+                  decoration: InputDecoration(
+                    hintText: 'https://example.com',
+                    labelText: 'server_url'.tr,
+                  ),
+                ),
+            ]),
+          ),
+          actions: [
+            TextButton(onPressed: Get.back, child: Text('cancel'.tr)),
+            ElevatedButton(
+              onPressed: () async {
+                String url = selectedUrl == 'custom' ? customController.text.trim() : selectedUrl;
+                url = url.replaceAll(RegExp(r'/+
+    Get.find<LocalizationController>().saveCacheLanguage(null);
+    Get.find<LocalizationController>().searchSelectedLanguage();
+
+    showModalBottomSheet(
+      isScrollControlled: true,
+      useRootNavigator: true,
+      context: Get.context!,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(Dimensions.radiusExtraLarge),
+            topRight: Radius.circular(Dimensions.radiusExtraLarge)),
+      ),
+      builder: (context) {
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.8),
+          child: const LanguageBottomSheetWidget(),
+        );
+      },
+    ).then((value) => Get.find<LocalizationController>().setLanguage(
+        Get.find<LocalizationController>().getCacheLocaleFromSharedPref()));
+  }
+}
+), '');
+                final uri = Uri.tryParse(url);
+                if (uri == null || !uri.hasScheme || !uri.hasAuthority ||
+                    (uri.scheme != 'http' && uri.scheme != 'https')) {
+                  Get.snackbar('error'.tr, 'invalid_server_url'.tr);
+                  return;
+                }
+                await sharedPreferences.setString(AppConstants.serverBaseUrl, url);
+                AppConstants.baseUrl = url;
+                Get.back();
+                Get.offAllNamed(RouteHelper.getSplashRoute(null));
+              },
+              child: Text('save_and_restart'.tr),
+            ),
+          ],
+        );
+      }),
     );
   }
 
