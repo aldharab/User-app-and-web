@@ -27,7 +27,7 @@ class AppConstants {
   static const int balanceInputLen = 10;
   // static const String webHostedUrl = 'http://192.168.137.1/adminoldtest';
   // static const String webHostedUrl = 'http://192.168.8.179/adminoldtest';
-  //static const String webHostedUrl = 'http://192.168.0.179';
+   //static const String webHostedUrl = 'http://192.168.0.179';
    static const String webHostedUrl = 'https://t.directplace.store';
   // static const String webHostedUrl = 'https://sulimanplus.com';
 

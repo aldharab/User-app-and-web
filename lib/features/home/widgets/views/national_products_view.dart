@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:suliman/common/widgets/card_design/item_card.dart'; // + ahmed
 import 'package:suliman/helper/responsive_helper.dart'; // + ahmed
 import 'package:suliman/features/splash/controllers/splash_controller.dart'; // + ahmed
@@ -84,6 +84,10 @@ class _NationalProductsViewState extends State<NationalProductsView> {
             ),
           ],
         );
+      }
+
+      if (itemController.nationalAggregatedItemList!.isEmpty) {
+        return const SliverToBoxAdapter(child: SizedBox());
       }
 
       return MultiSliver(

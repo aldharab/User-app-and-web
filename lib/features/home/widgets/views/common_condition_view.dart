@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:suliman/features/item/controllers/item_controller.dart';
 import 'package:suliman/features/language/controllers/language_controller.dart';
@@ -84,14 +84,11 @@ class CommonConditionView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return MedicineItemCard(item: itemController.conditionWiseProduct![index]);
                 },
-              ) : Center(child: Padding(
-                padding: const EdgeInsets.all(100),
-                child: Text('no_product_available'.tr),
-              )) : const MedicineCardShimmer(),
+              ) : const SizedBox() : const MedicineCardShimmer(),
 
             ]),
           ),
-        ) : const SizedBox() : const MedicineCardShimmer();
+        ) : const SizedBox() : const SizedBox();
       }
     );
   }

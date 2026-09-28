@@ -1,4 +1,4 @@
-﻿import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:suliman/common/widgets/custom_bottom_sheet_widget.dart';
@@ -226,7 +226,7 @@ class _ParcelInfoBottomSheetState extends State<ParcelInfoBottomSheet> {
                 const SizedBox(height: Dimensions.paddingSizeLarge),
                 _LabeledField(
                   label: 'email'.tr,
-                  required: true,
+                  required: false,
                   child: CustomTextField(
                     titleText: 'enter_email'.tr,
                     showLabelText: false,

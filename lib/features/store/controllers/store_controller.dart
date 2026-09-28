@@ -84,6 +84,7 @@ class StoreController extends GetxController implements GetxService {
   final Map<int, List<Store>> _moduleLatestStoreList = {};
   final Map<int, List<Store>> _moduleFeaturedStoreList = {};
   final Map<int, List<Store>> _moduleTopOfferStoreList = {};
+  final Map<int, List<Store>> _moduleVisitAgainStoreList = {};
   final Map<int, StoreModel> _moduleStoreModel = {};
 
   void switchModule(int? moduleId) {
@@ -92,6 +93,7 @@ class StoreController extends GetxController implements GetxService {
       _latestStoreList = _moduleLatestStoreList[moduleId];
       _featuredStoreList = _moduleFeaturedStoreList[moduleId];
       _topOfferStoreList = _moduleTopOfferStoreList[moduleId];
+      _visitAgainStoreList = _moduleVisitAgainStoreList[moduleId];
       _storeModel = _moduleStoreModel[moduleId];
       _isPopularStoreListLoaded = _popularStoreList != null;
       _isLatestStoreListLoaded = _latestStoreList != null;
@@ -129,6 +131,7 @@ class StoreController extends GetxController implements GetxService {
       _moduleLatestStoreList.clear();
       _moduleFeaturedStoreList.clear();
       _moduleTopOfferStoreList.clear();
+      _moduleVisitAgainStoreList.clear();
       _moduleStoreModel.clear();
     }
     update();
@@ -566,6 +569,7 @@ class StoreController extends GetxController implements GetxService {
   }
 
   Future<void> getVisitAgainStoreList({bool fromModule = false, DataSourceEnum dataSource = DataSourceEnum.local, bool fromRecall = false}) async {
+    int? currentModuleId = Get.find<SplashController>().module?.id;
     if(fromModule && !fromRecall) {
       _visitAgainStoreList = [];
     }
@@ -573,22 +577,31 @@ class StoreController extends GetxController implements GetxService {
     try {
       if(dataSource == DataSourceEnum.local) {
         stores = await storeServiceInterface.getVisitAgainStoreList(source: DataSourceEnum.local);
-        _prepareVisitAgainStore(stores);
+        if (Get.find<SplashController>().module?.id != currentModuleId) return;
+        _prepareVisitAgainStore(stores, currentModuleId);
         getVisitAgainStoreList(dataSource: DataSourceEnum.client, fromRecall: true);
       } else {
         stores = await storeServiceInterface.getVisitAgainStoreList(source: DataSourceEnum.client);
-        _prepareVisitAgainStore(stores);
+        if (Get.find<SplashController>().module?.id != currentModuleId) return;
+        _prepareVisitAgainStore(stores, currentModuleId);
       }
     } catch(e) {
-      _prepareVisitAgainStore([]);
+      if (Get.find<SplashController>().module?.id == currentModuleId) {
+        _prepareVisitAgainStore([], currentModuleId);
+      }
     }
   }
-  void _prepareVisitAgainStore(List<Store>? stores) {
+
+  void _prepareVisitAgainStore(List<Store>? stores, [int? targetModuleId]) {
     _visitAgainStoreList = [];
+    int? currentModuleId = targetModuleId ?? Get.find<SplashController>().module?.id;
     if (stores != null) {
       List<Modules> moduleList = [];
       moduleList.addAll(storeServiceInterface.moduleList());
       for (var store in stores) {
+        if (currentModuleId != null && store.moduleId != currentModuleId) {
+          continue;
+        }
         for (var module in moduleList) {
           if(module.id == store.moduleId){
             if(module.pivot!.zoneId == store.zoneId){
@@ -597,6 +610,9 @@ class StoreController extends GetxController implements GetxService {
           }
         }
       }
+    }
+    if (currentModuleId != null && _visitAgainStoreList != null) {
+      _moduleVisitAgainStoreList[currentModuleId] = _visitAgainStoreList!;
     }
     update();
   }

@@ -1,4 +1,4 @@
-﻿import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
@@ -441,7 +441,7 @@ class _ParcelViewWidgetState extends State<ParcelViewWidget> {
                     controller: widget.guestEmailController,
                     inputType: TextInputType.emailAddress,
                     focusNode: guestEmailNode,
-                    required: parcelController.isSender,
+                    required: false,
                     prefixImage: Images.mail,
                     inputAction: TextInputAction.done,
                   ) : const SizedBox(),

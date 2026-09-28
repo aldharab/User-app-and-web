@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:suliman/features/item/controllers/item_controller.dart';
 import 'package:suliman/features/item/domain/models/basic_medicine_model.dart';
@@ -78,7 +78,11 @@ class _WebFeaturedCategoriesViewWidgetState extends State<WebFeaturedCategoriesV
             isFirstTime = false;
           }
 
-          return itemController.featuredCategoriesItem != null ? itemController.featuredCategoriesItem!.items!.isNotEmpty ? Padding(
+          if(products.isEmpty) {
+            return const SizedBox();
+          }
+
+          return (itemController.featuredCategoriesItem != null && itemController.featuredCategoriesItem!.items != null && itemController.featuredCategoriesItem!.items!.isNotEmpty) ? Padding(
             padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
             child: Container(
               decoration: BoxDecoration(
@@ -173,7 +177,7 @@ class _WebFeaturedCategoriesViewWidgetState extends State<WebFeaturedCategoriesV
 
               ]),
             ),
-          ) : const SizedBox() : const WebFeaturedCategoriesShimmerView();
+          ) : const SizedBox();
         }
     );
   }

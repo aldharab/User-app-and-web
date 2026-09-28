@@ -205,12 +205,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       inputType: TextInputType.emailAddress,
                       prefixIcon: CupertinoIcons.mail_solid,
                       labelText: 'email'.tr,
-                      required: true,
-                      validator: (value) => ValidateCheck.validateEmail(value),
-                      suffixImage: profileController.userInfoModel!.isEmailVerified! && profileController.userInfoModel!.email == _emailController.text
-                          ? Images.verifiedIcon : Get.find<SplashController>().configModel!.centralizeLoginSetup!.emailVerificationStatus! ? Images.unverifiedIcon : null,
+                      required: false,
+                      validator: (value) => ValidateCheck.validateOptionalEmail(value),
+                      suffixImage: (profileController.userInfoModel!.email != null && profileController.userInfoModel!.email!.isNotEmpty && profileController.userInfoModel!.isEmailVerified! && profileController.userInfoModel!.email == _emailController.text)
+                          ? Images.verifiedIcon : (_emailController.text.trim().isNotEmpty && Get.find<SplashController>().configModel!.centralizeLoginSetup!.emailVerificationStatus!) ? Images.unverifiedIcon : null,
                       suffixOnPressed: () async {
-                        if(!profileController.userInfoModel!.isEmailVerified! || profileController.userInfoModel!.email != _emailController.text) {
+                        if(_emailController.text.trim().isNotEmpty && (!profileController.userInfoModel!.isEmailVerified! || profileController.userInfoModel!.email != _emailController.text)) {
                           Get.dialog(const CustomLoaderWidget());
                           await _updateProfile(profileController: profileController, fromButton: false, fromPhone: false);
                         }
@@ -590,15 +590,15 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             inputType: TextInputType.emailAddress,
                             prefixIcon: CupertinoIcons.mail_solid,
                             labelText: 'email'.tr,
-                            required: true,
-                            validator: (value) => ValidateCheck.validateEmail(value),
+                            required: false,
+                            validator: (value) => ValidateCheck.validateOptionalEmail(value),
                             onChanged: (value) {
                               profileController.update();
                             },
-                            suffixImage: profileController.userInfoModel!.isEmailVerified! && profileController.userInfoModel!.email == _emailController.text
-                              ? Images.verifiedIcon : Get.find<SplashController>().configModel!.centralizeLoginSetup!.emailVerificationStatus! ? Images.unverifiedIcon : null,
+                            suffixImage: (profileController.userInfoModel!.email != null && profileController.userInfoModel!.email!.isNotEmpty && profileController.userInfoModel!.isEmailVerified! && profileController.userInfoModel!.email == _emailController.text)
+                              ? Images.verifiedIcon : (_emailController.text.trim().isNotEmpty && Get.find<SplashController>().configModel!.centralizeLoginSetup!.emailVerificationStatus!) ? Images.unverifiedIcon : null,
                             suffixOnPressed: () {
-                              if(!profileController.userInfoModel!.isEmailVerified! || profileController.userInfoModel!.email != _emailController.text) {
+                              if(_emailController.text.trim().isNotEmpty && (!profileController.userInfoModel!.isEmailVerified! || profileController.userInfoModel!.email != _emailController.text)) {
                                 _updateProfile(profileController: profileController, fromButton: false, fromPhone: false);
                               }
                             },
@@ -672,9 +672,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       showCustomSnackBar('enter_your_name'.tr);
     }else if(!phoneValid.isValid) {
       showCustomSnackBar('invalid_phone_number'.tr);
-    }else if (email.isEmpty) {
-      showCustomSnackBar('enter_email_address'.tr);
-    }else if (!GetUtils.isEmail(email)) {
+    }else if (email.isNotEmpty && !GetUtils.isEmail(email)) {
       showCustomSnackBar('enter_a_valid_email_address'.tr);
     }else if (phoneNumber.isEmpty) {
       showCustomSnackBar('enter_phone_number'.tr);

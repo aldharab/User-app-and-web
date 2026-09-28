@@ -442,10 +442,10 @@ class ModuleStickyDelegate extends SliverPersistentHeaderDelegate {
                                             child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(
-                                                      Dimensions.radiusLarge),
+                                                      Dimensions.radiusSmall),
                                               child: CustomImage(
                                                  image: collapsedImageUrl,
-                                                height: 60,
+                                                height: 40,
                                                 width: 100,
                                                 fit: BoxFit.contain,
                                               ),

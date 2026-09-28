@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -93,11 +93,14 @@ class HomeRepository implements HomeRepositoryInterface {
           homepageModel = HomepageModel.fromJson(response.body);
           LocalClient.organize(DataSourceEnum.client, cacheId, jsonEncode(response.body), apiClient.getHeader());
         }
+        break;
+
       case DataSourceEnum.local:
         String? cacheResponseData = await LocalClient.organize(DataSourceEnum.local, cacheId, null, null);
         if(cacheResponseData != null) {
           homepageModel = HomepageModel.fromJson(jsonDecode(cacheResponseData));
         }
+        break;
     }
     return homepageModel;
   }

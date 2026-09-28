@@ -761,8 +761,11 @@ class ItemController extends GetxController implements GetxService {
   }
 
   bool _isPopularItemListLoaded = false;
+  bool get isPopularItemListLoaded => _isPopularItemListLoaded;
   bool _isReviewedItemListLoaded = false;
+  bool get isReviewedItemListLoaded => _isReviewedItemListLoaded;
   bool _isDiscountedItemListLoaded = false;
+  bool get isDiscountedItemListLoaded => _isDiscountedItemListLoaded;
 
   final List<String> _popularInFlightOffsets = [];
   final List<String> _reviewedInFlightOffsets = [];
@@ -806,9 +809,7 @@ class ItemController extends GetxController implements GetxService {
     }
 
     if (!_offsetList.contains(offset) || fromLocalTransition) {
-      if (!fromLocalTransition) {
-        _offsetList.add(offset);
-      }
+      _offsetList.add(offset);
       _popularInFlightOffsets.add(inFlightKey);
       
       try {
@@ -835,10 +836,14 @@ class ItemController extends GetxController implements GetxService {
           }
         } else {
           _isLoading = false;
+          if(dataSource == DataSourceEnum.client) {
+            _isPopularItemListLoaded = true;
+            _popularItemList ??= [];
+          }
         }
         update();
 
-        if(dataSource == DataSourceEnum.local) {
+        if(dataSource == DataSourceEnum.local && !_isPopularItemListLoaded) {
           getPopularItemList(notify : notify, dataSource: DataSourceEnum.client, offset: '1', fromLocalTransition: true);
         }
       } finally {
@@ -1230,11 +1235,12 @@ class ItemController extends GetxController implements GetxService {
 
         _prepareDiscountedItems(itemModel, offset, firstTimeCategoryLoad, fromLocalTransition: fromLocalTransition);
 
-        if(dataSource == DataSourceEnum.local) {
+        if(dataSource == DataSourceEnum.local && !_isDiscountedItemListLoaded) {
           getDiscountedItemList(notify: notify, dataSource: DataSourceEnum.client, offset: '1', fromLocalTransition: true);
         }
         if(dataSource == DataSourceEnum.client) {
           _isDiscountedItemListLoaded = true;
+          _discountedItemList ??= [];
         }
       } finally {
         _discountedInFlightOffsets.remove(inFlightKey);
@@ -1262,6 +1268,7 @@ class ItemController extends GetxController implements GetxService {
       _isLoading = false;
     } else {
       _isLoading = false;
+      _discountedItemList ??= [];
     }
     update();
   }

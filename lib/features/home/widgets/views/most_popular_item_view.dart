@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:suliman/common/widgets/card_design/item_card.dart';
 import 'package:suliman/features/item/controllers/item_controller.dart';
@@ -34,7 +34,7 @@ class _MostPopularItemViewState extends State<MostPopularItemView> {
       _fetchItems();
     } else {
       var itemController = Get.find<ItemController>();
-      if (itemController.popularItemList == null) {
+      if (itemController.popularItemList == null && !itemController.isPopularItemListLoaded) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           itemController.getPopularItemList(offset: '1');
         });

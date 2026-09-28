@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:suliman/common/widgets/hover/text_hover.dart';
@@ -19,7 +19,7 @@ class WebRecommendedStoreView extends StatelessWidget {
     bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.food;
 
     return GetBuilder<StoreController>(builder: (storeController) {
-      return storeController.recommendedStoreList != null ? Container(
+      return (storeController.recommendedStoreList != null && storeController.recommendedStoreList!.isNotEmpty) ? Container(
         margin: const EdgeInsets.only(top: Dimensions.paddingSizeDefault),
         width: Get.width, height: 302,
         padding: const EdgeInsets.all(11),

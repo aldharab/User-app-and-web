@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:suliman/features/store/controllers/store_controller.dart';
 import 'package:suliman/features/store/domain/models/store_model.dart';
@@ -28,12 +28,12 @@ class _PopularStoreViewState extends State<PopularStoreView> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
-      child: GetBuilder<StoreController>(builder: (storeController) {
-        List<Store>? storeList = storeController.popularStoreList;
+    return GetBuilder<StoreController>(builder: (storeController) {
+      List<Store>? storeList = storeController.popularStoreList;
 
-        return (storeList != null && storeList.isEmpty) ? const SizedBox() : Column(children: [
+      return (storeList != null && storeList.isEmpty) ? const SizedBox() : Padding(
+        padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
+        child: Column(children: [
           Padding(
             padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, right: Dimensions.paddingSizeDefault, bottom: Dimensions.paddingSizeDefault),
             child: TitleWidget(
@@ -60,9 +60,9 @@ class _PopularStoreViewState extends State<PopularStoreView> {
             ) : const PopularStoreShimmer(),
           ),
 
-        ]);
-      }),
-    );
+        ]),
+      );
+    });
   }
 }
 

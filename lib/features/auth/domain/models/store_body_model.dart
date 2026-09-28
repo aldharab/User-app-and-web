@@ -74,7 +74,7 @@ class StoreBodyModel {
     data['f_name'] = fName!;
     data['l_name'] = lName!;
     data['phone'] = phone!;
-    data['email'] = email!;
+    data['email'] = email ?? '';
     data['password'] = password!;
     data['zone_id'] = zoneId!;
     data['module_id'] = moduleId!;

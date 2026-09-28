@@ -1,4 +1,4 @@
-﻿import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
@@ -86,7 +86,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       _contactPersonNameController.text = '${Get.find<ProfileController>().userInfoModel!.fName} ${Get.find<ProfileController>().userInfoModel!.lName}';
       splitPhoneNumber(Get.find<ProfileController>().userInfoModel!.phone!);
     } else if (widget.forGuest) {
-      _emailController.text = 'guest${DateTime.now().millisecondsSinceEpoch}@email.com';
+      _emailController.text = '';
     }
 
   }
@@ -873,7 +873,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     }
 
     if(widget.forGuest) {
-      addressModel.email = _emailController.text;
+      addressModel.email = _emailController.text.trim().isNotEmpty ? _emailController.text.trim() : null;
       Get.back(result: addressModel);
     } else {
       if(widget.address == null) {
@@ -902,8 +902,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       showCustomSnackBar('please_enter_the_phone_number'.tr);
     } else if (!isValid) {
       showCustomSnackBar('invalid_phone_number'.tr);
-    } else if(widget.forGuest && _emailController.text.isEmpty) {
-      showCustomSnackBar('please_enter_contact_person_email'.tr);
+    } else if(widget.forGuest && _emailController.text.isNotEmpty && !GetUtils.isEmail(_emailController.text.trim())) {
+      showCustomSnackBar('enter_valid_email_address'.tr);
     } else {
       AddressModel addressModel = AddressModel(
         id: widget.address?.id,

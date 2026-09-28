@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -175,7 +175,7 @@ class StoreRepository implements StoreRepositoryInterface {
 
   Future<List<Store>?> _getVisitAgainStoreList({required DataSourceEnum source}) async {
     List<Store>? visitAgainStoreList;
-    String cacheId = AppConstants.visitAgainStoreUri;
+    String cacheId = '${AppConstants.visitAgainStoreUri}-${Get.find<SplashController>().module?.id ?? 0}';
 
     switch(source) {
       case DataSourceEnum.client:

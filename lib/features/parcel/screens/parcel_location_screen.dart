@@ -229,10 +229,7 @@ class _ParcelLocationScreenState extends State<ParcelLocationScreen> {
     } else if (!phoneValid.isValid) {
       if (showSnackbarOnFail) showCustomSnackBar('invalid_phone_number'.tr);
       return false;
-    } else if (AuthHelper.isGuestLoggedIn() && _guestSenderEmailController.text.trim().isEmpty) {
-      if (showSnackbarOnFail) showCustomSnackBar('please_enter_sender_email'.tr);
-      return false;
-    } else if (AuthHelper.isGuestLoggedIn() && !CustomValidator.isEmailValid(_guestSenderEmailController.text.trim())) {
+    } else if (AuthHelper.isGuestLoggedIn() && _guestSenderEmailController.text.trim().isNotEmpty && !CustomValidator.isEmailValid(_guestSenderEmailController.text.trim())) {
       if (showSnackbarOnFail) showCustomSnackBar('enter_valid_email_address'.tr);
       return false;
     }
@@ -276,10 +273,7 @@ class _ParcelLocationScreenState extends State<ParcelLocationScreen> {
     } else if (!phoneValid.isValid) {
       if (showSnackbarOnFail) showCustomSnackBar('invalid_phone_number'.tr);
       return false;
-    } else if (AuthHelper.isGuestLoggedIn() && _guestReceiverEmailController.text.trim().isEmpty) {
-      if (showSnackbarOnFail) showCustomSnackBar('please_enter_sender_email'.tr);
-      return false;
-    } else if (AuthHelper.isGuestLoggedIn() && !CustomValidator.isEmailValid(_guestReceiverEmailController.text.trim())) {
+    } else if (AuthHelper.isGuestLoggedIn() && _guestReceiverEmailController.text.trim().isNotEmpty && !CustomValidator.isEmailValid(_guestReceiverEmailController.text.trim())) {
       if (showSnackbarOnFail) showCustomSnackBar('enter_valid_email_address'.tr);
       return false;
     }

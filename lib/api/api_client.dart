@@ -322,6 +322,14 @@ class ApiClient extends GetxService {
           return Response(statusCode: -1, statusText: cancelToken.cancelReason ?? 'Request cancelled');
         }
 
+        // Circuit breaker: if connection is known to be down, abort early
+        if (NetworkInfo.lastKnownConnection == false) {
+          bool hasNet = await NetworkInfo.hasConnection();
+          if (!hasNet) {
+            return Response(statusCode: 1, statusText: noInternetMessage);
+          }
+        }
+
         if (kDebugMode) {
           log('====> API Call: $uri\nHeader: ${_maskHeadersForLog(finalHeaders)}');
         }
@@ -372,6 +380,13 @@ class ApiClient extends GetxService {
 
   Future<Response> postData(String uri, dynamic body, {Map<String, String>? headers, int? timeout, bool handleError = true}) async {
     try {
+      if (NetworkInfo.lastKnownConnection == false) {
+        bool hasNet = await NetworkInfo.hasConnection();
+        if (!hasNet) {
+          return Response(statusCode: 1, statusText: noInternetMessage);
+        }
+      }
+
       Map<String, String> finalHeaders = _sanitizeHeaders(headers);
       if(kDebugMode) {
         print('====> API Call: $uri\nHeader: ${_maskHeadersForLog(finalHeaders)}');
@@ -405,6 +420,13 @@ class ApiClient extends GetxService {
 
   Future<Response> postMultipartData(String uri, Map<String, String> body, List<MultipartBody> multipartBody, {List<MultipartDocument>? multipartDoc, Map<String, String>? headers, int? timeout, bool handleError = true}) async {
     try {
+      if (NetworkInfo.lastKnownConnection == false) {
+        bool hasNet = await NetworkInfo.hasConnection();
+        if (!hasNet) {
+          return Response(statusCode: 1, statusText: noInternetMessage);
+        }
+      }
+
       Map<String, String> finalHeaders = _sanitizeHeaders(headers);
       debugPrint('====> API Call: $uri\nHeader: ${_maskHeadersForLog(finalHeaders)}');
       debugPrint('====> API Body: ${_maskBodyForLog(body)} with ${multipartBody.length} and multipart ${multipartDoc?.length}');
@@ -468,6 +490,13 @@ class ApiClient extends GetxService {
 
   Future<Response> putData(String uri, dynamic body, {Map<String, String>? headers, int? timeout, bool handleError = true}) async {
     try {
+      if (NetworkInfo.lastKnownConnection == false) {
+        bool hasNet = await NetworkInfo.hasConnection();
+        if (!hasNet) {
+          return Response(statusCode: 1, statusText: noInternetMessage);
+        }
+      }
+
       Map<String, String> finalHeaders = _sanitizeHeaders(headers);
       if(kDebugMode) {
         print('====> API Call: $uri\nHeader: ${_maskHeadersForLog(finalHeaders)}');
@@ -500,6 +529,13 @@ class ApiClient extends GetxService {
 
   Future<Response> deleteData(String uri, {Map<String, String>? headers, int? timeout, bool handleError = true}) async {
     try {
+      if (NetworkInfo.lastKnownConnection == false) {
+        bool hasNet = await NetworkInfo.hasConnection();
+        if (!hasNet) {
+          return Response(statusCode: 1, statusText: noInternetMessage);
+        }
+      }
+
       Map<String, String> finalHeaders = _sanitizeHeaders(headers);
       if(kDebugMode) {
         print('====> API Call: $uri\nHeader: ${_maskHeadersForLog(finalHeaders)}');

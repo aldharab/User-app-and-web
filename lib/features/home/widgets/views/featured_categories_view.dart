@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:suliman/features/item/controllers/item_controller.dart';
@@ -10,8 +10,24 @@ import 'package:suliman/util/dimensions.dart';
 import 'package:suliman/util/styles.dart';
 import 'package:suliman/util/app_constants.dart';
 
-class FeaturedCategoriesView extends StatelessWidget {
+class FeaturedCategoriesView extends StatefulWidget {
   const FeaturedCategoriesView({super.key});
+
+  @override
+  State<FeaturedCategoriesView> createState() => _FeaturedCategoriesViewState();
+}
+
+class _FeaturedCategoriesViewState extends State<FeaturedCategoriesView> {
+  @override
+  void initState() {
+    super.initState();
+    var itemController = Get.find<ItemController>();
+    if (itemController.featuredCategoriesItem == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        itemController.getFeaturedCategoriesItemList(false, false);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,25 +36,35 @@ class FeaturedCategoriesView extends StatelessWidget {
 
     return GetBuilder<ItemController>(
       builder: (itemController) {
+        if (itemController.featuredCategoriesItem == null) {
+          return const SizedBox();
+        }
+
         List<Categories> categoryList = [];
         List<Item>? products = [];
         categoryList.add(Categories(id: 0, name: 'all'.tr));
-        if(itemController.featuredCategoriesItem != null) {
-          for(Categories category in itemController.featuredCategoriesItem!.categories!) {
+        if (itemController.featuredCategoriesItem!.categories != null) {
+          for (Categories category in itemController.featuredCategoriesItem!.categories!) {
             categoryList.add(category);
           }
+        }
 
+        if (itemController.featuredCategoriesItem!.items != null) {
           for (Item product in itemController.featuredCategoriesItem!.items!) {
-            if(itemController.selectedCategory == 0) {
+            if (itemController.selectedCategory == 0) {
               products.add(product);
-            }
-            if(categoryList[itemController.selectedCategory].id == product.categoryId){
+            } else if (itemController.selectedCategory < categoryList.length &&
+                categoryList[itemController.selectedCategory].id == product.categoryId) {
               products.add(product);
             }
           }
         }
 
-        return itemController.featuredCategoriesItem != null ? itemController.featuredCategoriesItem!.items != null && itemController.featuredCategoriesItem!.items!.isNotEmpty ? Padding(
+        if (products.isEmpty) {
+          return const SizedBox();
+        }
+
+        return Padding(
           padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
           child: Container(
             decoration: BoxDecoration(
@@ -62,15 +88,15 @@ class FeaturedCategoriesView extends StatelessWidget {
                         bool isSelected = itemController.selectedCategory == index;
                         double width = double.parse(categoryList[index].name!.length.toString()) * 5;
                         return Column(children: [
-                            InkWell(
-                              onTap: () {
-                                itemController.selectCategory(index);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
-                                child: Text('${categoryList[index].name}', style: robotoMedium.copyWith(color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).disabledColor)),
-                              ),
+                          InkWell(
+                            onTap: () {
+                              itemController.selectCategory(index);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
+                              child: Text('${categoryList[index].name}', style: robotoMedium.copyWith(color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).disabledColor)),
                             ),
+                          ),
 
                           isSelected ? Container(
                             margin: const EdgeInsets.only(top: Dimensions.paddingSizeExtraSmall),
@@ -78,7 +104,6 @@ class FeaturedCategoriesView extends StatelessWidget {
                             color: Theme.of(context).primaryColor,
                           ) : const SizedBox(),
                         ]);
-
                       },
                     ),
                   ),
@@ -112,7 +137,7 @@ class FeaturedCategoriesView extends StatelessWidget {
 
             ]),
           ),
-        ) : const SizedBox() : const FeaturedCategoriesShimmerView();
+        );
       }
     );
   }

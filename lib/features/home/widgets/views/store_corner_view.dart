@@ -1,4 +1,4 @@
-﻿import 'package:suliman/features/home/domain/models/store_corner_model.dart';
+import 'package:suliman/features/home/domain/models/store_corner_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:get/get.dart';
@@ -80,7 +80,7 @@ class _StoreCornerViewState extends State<StoreCornerView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.storeCorner == null || widget.storeCorner!.store == null) {
+    if (widget.storeCorner == null || widget.storeCorner!.store == null || widget.storeCorner!.items == null || widget.storeCorner!.items!.isEmpty) {
       return const SizedBox();
     }
 

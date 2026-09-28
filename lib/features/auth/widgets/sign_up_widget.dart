@@ -1,4 +1,4 @@
-﻿import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -142,7 +142,7 @@ class SignUpWidgetState extends State<SignUpWidget> {
                   nextFocus: _passwordFocus,
                   inputType: TextInputType.emailAddress,
                   prefixIcon: CupertinoIcons.mail,
-                  validator: (value) => ValidateCheck.validateEmail(value),
+                  validator: (value) => ValidateCheck.validateOptionalEmail(value),
                   borderRadius: 15,
                 ),
                 const SizedBox(height: Dimensions.paddingSizeSmall),
@@ -496,9 +496,7 @@ class SignUpWidgetState extends State<SignUpWidget> {
     if (_formKeySignUp!.currentState!.validate()) {
       if (name.isEmpty) {
         showCustomSnackBar('please_enter_your_name'.tr);
-      } else if (email.isEmpty) {
-        showCustomSnackBar('enter_email_address'.tr);
-      } else if (!GetUtils.isEmail(email)) {
+      } else if (email.isNotEmpty && !GetUtils.isEmail(email)) {
         showCustomSnackBar('enter_a_valid_email_address'.tr);
       } else if (number.isEmpty) {
         showCustomSnackBar('enter_phone_number'.tr);

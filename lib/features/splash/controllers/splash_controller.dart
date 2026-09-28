@@ -13,6 +13,7 @@ import 'package:suliman/features/auth/controllers/auth_controller.dart';
 import 'package:suliman/features/banner/controllers/banner_controller.dart';
 import 'package:suliman/features/category/controllers/category_controller.dart';
 import 'package:suliman/features/flash_sale/controllers/flash_sale_controller.dart';
+import 'package:suliman/features/home/controllers/advertisement_controller.dart';
 import 'package:suliman/features/home/controllers/home_controller.dart';
 import 'package:suliman/features/item/controllers/campaign_controller.dart';
 import 'package:suliman/features/language/controllers/language_controller.dart';
@@ -572,6 +573,7 @@ class SplashController extends GetxController implements GetxService {
     if (Get.isRegistered<BrandsController>()) Get.find<BrandsController>().switchModule(newModuleId);
     if (Get.isRegistered<CampaignController>()) Get.find<CampaignController>().switchModule(newModuleId);
     if (Get.isRegistered<HomeController>()) Get.find<HomeController>().switchModule(newModuleId);
+    if (Get.isRegistered<AdvertisementController>()) Get.find<AdvertisementController>().switchModule(newModuleId);
   }
 
   Future<void> setModule(ModuleModel? module, {bool notify = true}) async {

@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 import 'package:get/get_connect.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,8 +102,11 @@ class CartRepository implements CartRepositoryInterface<OnlineCart> {
       if (token != null && token.isNotEmpty && token != 'null') 'Authorization': 'Bearer $token',
     };
 
+    final String guestId = AuthHelper.getGuestId();
+    final String guestQuery = (!AuthHelper.isLoggedIn() && guestId.isNotEmpty && guestId != 'null') ? '?guest_id=$guestId' : '';
+
     Response response = await apiClient.getData(
-      '${AppConstants.getCartListUri}${!AuthHelper.isLoggedIn() ? '?guest_id=${AuthHelper.getGuestId()}' : ''}',
+      '${AppConstants.getCartListUri}$guestQuery',
       headers: ModuleHelper.getModule()?.id == null ? header : null,
     );
     if(response.isOk) {

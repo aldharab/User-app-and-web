@@ -1650,6 +1650,8 @@
   "continue_with_apple": "تواصل مع أبل",
   "otp_sign_in": "تسجيل دخول OTP",
   "user_name": "اسم المستخدم",
+  "password_hint":"كلمة المرور ",
+  "phone_hint":"رقم الهاتف",
   "please_enter_your_name": "الرجاء إدخال اسمك",
   "password_should_be_8_characters": "يجب أن تتكون كلمة المرور من 8 أحرف",
   "yes_its_me": "نعم، إنه أنا",

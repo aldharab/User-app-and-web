@@ -1324,9 +1324,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                             (checkoutController.orderType == 'take_away' ||
                                 checkoutController.orderType ==
                                     'pickup_center') &&
-                            guestEmailController.text.isEmpty) {
+                            guestEmailController.text.isNotEmpty &&
+                            !GetUtils.isEmail(guestEmailController.text.trim())) {
                           showCustomSnackBar(
-                              'please_enter_contact_person_email'.tr);
+                              'enter_valid_email_address'.tr);
                         } else if (isGuestLogIn &&
                             checkoutController.isCreateAccount &&
                             guestPasswordController.text.isEmpty) {

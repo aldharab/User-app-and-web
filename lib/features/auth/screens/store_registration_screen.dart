@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -459,9 +459,9 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen> with 
                                 inputType: TextInputType.emailAddress,
                                 prefixIcon: Icons.email,
                                 iconSize: 25,
-                                required: true,
-                                labelText: 'email'.tr,
-                                validator: (value) => ValidateCheck.validateEmail(value),
+                                required: false,
+                                labelText: '${'email'.tr} (${'optional'.tr})',
+                                validator: (value) => ValidateCheck.validateOptionalEmail(value),
                               ),
                               const SizedBox(height: Dimensions.paddingSizeExtremeLarge),
 
@@ -1298,9 +1298,9 @@ class _StoreRegistrationScreenState extends State<StoreRegistrationScreen> with 
                   inputType: TextInputType.emailAddress,
                   prefixIcon: Icons.email,
                   iconSize: 25,
-                  required: true,
-                  labelText: 'email'.tr,
-                  validator: (value) => ValidateCheck.validateEmail(value),
+                  required: false,
+                  labelText: '${'email'.tr} (${'optional'.tr})',
+                  validator: (value) => ValidateCheck.validateOptionalEmail(value),
                 ),
               ),
               const SizedBox(width: Dimensions.paddingSizeLarge),

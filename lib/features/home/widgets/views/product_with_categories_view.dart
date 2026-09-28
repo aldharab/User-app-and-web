@@ -1,10 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:suliman/features/item/controllers/item_controller.dart';
 import 'package:suliman/features/item/domain/models/basic_medicine_model.dart';
 import 'package:suliman/features/item/domain/models/item_model.dart';
 import 'package:suliman/features/splash/controllers/splash_controller.dart';
-import 'package:suliman/features/home/widgets/web/web_basic_medicine_nearby_view_widget.dart';
 import 'package:suliman/features/home/widgets/web/widgets/medicine_item_card.dart';
 import 'package:suliman/helper/responsive_helper.dart';
 import 'package:suliman/util/dimensions.dart';
@@ -32,41 +31,73 @@ class _ProductWithCategoriesViewState extends State<ProductWithCategoriesView> {
     }
 
     return GetBuilder<ItemController>(builder: (itemController) {
-      List<Categories>? categories = [];
-      List<Item>? products = [];
-      if(widget.fromShop ? itemController.reviewedCategoriesList != null && itemController.reviewedItemList != null : itemController.basicMedicineModel != null){
-        categories.add(Categories(name: 'all'.tr, id: 0));
-        for (var category in widget.fromShop ? itemController.reviewedCategoriesList! : itemController.basicMedicineModel!.categories!) {
-          categories.add(category);
-        }
-        for (var product in widget.fromShop ? itemController.reviewedItemList! : itemController.basicMedicineModel!.products!) {
-          bool isMatched = false;
-          var selectedId = categories[selectedCategory].id;
-          String selectedIdStr = selectedId?.toString() ?? '0';
+      final bool isShopLoading = widget.fromShop && itemController.reviewedItemList == null;
+      final bool isMedicineLoading = !widget.fromShop && itemController.basicMedicineModel == null;
 
-          if (selectedCategory == 0 || selectedIdStr == '0') {
+      if (isShopLoading || isMedicineLoading) {
+        return const SizedBox();
+      }
+
+      final bool isShopValid = widget.fromShop &&
+          itemController.reviewedItemList != null &&
+          itemController.reviewedItemList!.isNotEmpty;
+
+      final bool isMedicineValid = !widget.fromShop &&
+          itemController.basicMedicineModel != null &&
+          itemController.basicMedicineModel!.products != null &&
+          itemController.basicMedicineModel!.products!.isNotEmpty;
+
+      if (!isShopValid && !isMedicineValid) {
+        return const SizedBox();
+      }
+
+      List<Categories> categories = [];
+      List<Item> products = [];
+
+      categories.add(Categories(name: 'all'.tr, id: 0));
+      final rawCategories = widget.fromShop
+          ? (itemController.reviewedCategoriesList ?? [])
+          : (itemController.basicMedicineModel?.categories ?? []);
+      categories.addAll(rawCategories);
+
+      if (selectedCategory >= categories.length) {
+        selectedCategory = 0;
+      }
+
+      final rawProducts = widget.fromShop
+          ? itemController.reviewedItemList!
+          : itemController.basicMedicineModel!.products!;
+
+      var selectedId = categories[selectedCategory].id;
+      String selectedIdStr = selectedId?.toString() ?? '0';
+
+      for (var product in rawProducts) {
+        bool isMatched = false;
+        if (selectedCategory == 0 || selectedIdStr == '0') {
+          isMatched = true;
+        } else {
+          if (product.categoryId?.toString() == selectedIdStr) {
             isMatched = true;
-          } else {
-            if (product.categoryId?.toString() == selectedIdStr) {
-              isMatched = true;
-            } else if (product.categoryIds != null) {
-              for (var categoryId in product.categoryIds!) {
-                if (categoryId.id?.toString() == selectedIdStr) {
-                  isMatched = true;
-                  break;
-                }
+          } else if (product.categoryIds != null) {
+            for (var categoryId in product.categoryIds!) {
+              if (categoryId.id?.toString() == selectedIdStr) {
+                isMatched = true;
+                break;
               }
             }
           }
+        }
 
-          if (isMatched) {
-            products.add(product);
-          }
+        if (isMatched) {
+          products.add(product);
         }
       }
-      bool hasData = widget.fromShop ? (itemController.reviewedCategoriesList != null && itemController.reviewedItemList != null) : itemController.basicMedicineModel != null;
 
-      return hasData ? Padding(
+      if (products.isEmpty) {
+        return const SizedBox();
+      }
+
+      return Padding(
         padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
@@ -128,7 +159,7 @@ class _ProductWithCategoriesViewState extends State<ProductWithCategoriesView> {
               ),
               child: SizedBox(
                 height: widget.height ?? (ResponsiveHelper.isDesktop(context) ? widget.fromShop ?320 : 260 : widget.fromShop ? 350 : 350), width: Get.width,
-                child: (widget.fromShop ? itemController.reviewedCategoriesList != null : itemController.basicMedicineModel != null) ? products.isNotEmpty ? ListView.builder(
+                child: ListView.builder(
                   key: ValueKey('category_products_$selectedCategory'),
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
@@ -140,13 +171,13 @@ class _ProductWithCategoriesViewState extends State<ProductWithCategoriesView> {
                        child: MedicineItemCard(item: products[index], width: 170),
                     );
                   },
-                ) : Center(child: Text('no_products_found'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor))) : const MedicineCardShimmer(),
+                ),
               ),
             ),
           ]),
 
         ]),
-      ) : const SizedBox();
+      );
     });
   }
 }
