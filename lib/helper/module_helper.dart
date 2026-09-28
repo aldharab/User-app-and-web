@@ -67,12 +67,6 @@ class ModuleHelper {
     return type == AppConstants.grocery || type == 'grocery';
   }
 
-  /// Returns whether a module is laundry dynamically.
-  static bool isLaundry({int? moduleId, String? moduleType, dynamic item}) {
-    final String? type = moduleType ?? item?.moduleType ?? getModuleTypeById(moduleId ?? item?.moduleId) ?? getModule()?.moduleType ?? getCacheModule()?.moduleType;
-    return type == AppConstants.laundry || type == 'laundry';
-  }
-
 
   /// Returns whether unit should be displayed for an item.
   static bool isUnitVisible(dynamic item) {
