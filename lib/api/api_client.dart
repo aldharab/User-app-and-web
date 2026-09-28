@@ -23,7 +23,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
 class ApiClient extends GetxService {
-  final String appBaseUrl;
+  String get appBaseUrl => AppConstants.baseUrl;
   final SharedPreferences sharedPreferences;
   static final String noInternetMessage = 'connection_to_api_server_failed'.tr;
   final int timeoutInSeconds = 30;
@@ -32,7 +32,7 @@ class ApiClient extends GetxService {
   String? token;
   late Map<String, String> _mainHeaders;
 
-  ApiClient({required this.appBaseUrl, required this.sharedPreferences, String? token}) {
+  ApiClient({String? appBaseUrl, required this.sharedPreferences, String? token}) {
     this.token = token ?? sharedPreferences.getString(AppConstants.token);
     if (kDebugMode) {
       print('Token: ${this.token}');
