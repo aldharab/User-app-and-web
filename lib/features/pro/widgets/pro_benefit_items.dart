@@ -67,7 +67,6 @@ class ProBenefitItems {
       case AppConstants.food: return 'food'.tr;
       case AppConstants.pharmacy: return 'pharmacy'.tr;
       case AppConstants.ecommerce: return 'ecommerce'.tr;
-      case AppConstants.laundry: return 'laundry'.tr;
       case AppConstants.taxi: return 'rental'.tr;
       case AppConstants.ride: return 'ride_share'.tr;
       case AppConstants.parcel: return 'parcel'.tr;
