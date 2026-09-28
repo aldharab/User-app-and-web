@@ -2386,5 +2386,13 @@
   "fbs_consolidated_delivery_title": "Consolidated Shipment from Platform Central Hub (FBS ⚡)",
   "fbs_consolidated_delivery_notice": "Your items from multiple stores are bundled into a single package from the central hub, saving multiple delivery charges.",
   "auto_applied": "Auto Applied",
-  "our_new": "Our New"
+  "our_new": "Our New",
+  "server_environment": "Server Environment",
+  "external_developer": "External Developer",
+  "production_version": "Production Version",
+  "final_test_environment": "Final Test Environment",
+  "custom_server_url": "Custom Server URL",
+  "server_url": "Server URL",
+  "invalid_server_url": "Invalid server URL",
+  "save_and_restart": "Save & Restart"
 }
