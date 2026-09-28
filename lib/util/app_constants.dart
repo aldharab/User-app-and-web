@@ -465,7 +465,6 @@ class AppConstants {
   static const String parcel = 'parcel';
   static const String ecommerce = 'ecommerce';
   static const String grocery = 'grocery';
-  static const String laundry = 'laundry';
   static const String taxi = 'rental';
   static const String ride = 'ride_sharing';
   static const String services = 'services';
