@@ -129,23 +129,6 @@ class CheckoutController extends GetxController implements GetxService {
   int _selectedTimeSlot = 0;
   int get selectedTimeSlot => _selectedTimeSlot;
 
-  int _selectedLaundryPickupDateSlot = 0;
-  int get selectedLaundryPickupDateSlot => _selectedLaundryPickupDateSlot;
-
-  int _selectedLaundryPickupTimeSlot = 0;
-  int get selectedLaundryPickupTimeSlot => _selectedLaundryPickupTimeSlot;
-
-  String _preferableLaundryPickupTime = '';
-  String get preferableLaundryPickupTime => _preferableLaundryPickupTime;
-
-  int _selectedLaundryDeliveryDateSlot = 1;
-  int get selectedLaundryDeliveryDateSlot => _selectedLaundryDeliveryDateSlot;
-
-  int _selectedLaundryDeliveryTimeSlot = 0;
-  int get selectedLaundryDeliveryTimeSlot => _selectedLaundryDeliveryTimeSlot;
-
-  String _preferableLaundryDeliveryTime = '';
-  String get preferableLaundryDeliveryTime => _preferableLaundryDeliveryTime;
 
   double? _distance;
   double? get distance => _distance;
@@ -635,12 +618,6 @@ class CheckoutController extends GetxController implements GetxService {
     _paymentMethodIndex = -1;
     _selectedDateSlot = 0;
     _selectedTimeSlot = 0;
-    _selectedLaundryPickupDateSlot = 0;
-    _selectedLaundryPickupTimeSlot = 0;
-    _preferableLaundryPickupTime = '';
-    _selectedLaundryDeliveryDateSlot = 1;
-    _selectedLaundryDeliveryTimeSlot = 0;
-    _preferableLaundryDeliveryTime = '';
     _orderAttachment = null;
     _rawAttachment = null;
     if (resetMonthly) {
@@ -648,68 +625,6 @@ class CheckoutController extends GetxController implements GetxService {
     }
   }
 
-  int getLaundryMaxProcessingTime(List<CartModel?>? cartList) {
-    int maxHours = 24;
-    bool found = false;
-    if (cartList != null) {
-      for (var cart in cartList) {
-        if (cart != null && cart.item != null && cart.item!.foodVariations != null && cart.foodVariations != null) {
-          for (int i = 0; i < cart.item!.foodVariations!.length; i++) {
-            if (i < cart.foodVariations!.length) {
-              final values = cart.item!.foodVariations![i].variationValues;
-              if (values != null) {
-                for (int j = 0; j < values.length; j++) {
-                  if (j < cart.foodVariations![i].length && cart.foodVariations![i][j] == true) {
-                    final pTime = values[j].processingTime;
-                    if (pTime != null && pTime > 0) {
-                      if (!found || pTime > maxHours) {
-                        maxHours = pTime;
-                        found = true;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    return maxHours;
-  }
-
-  void updateLaundryPickupDateSlot(int index, int? interval) {
-    _selectedLaundryPickupDateSlot = index;
-    if(_allTimeSlots != null) {
-      validateSlot(_allTimeSlots!, index, interval);
-    }
-    update();
-  }
-
-  void updateLaundryPickupTimeSlot(int index) {
-    _selectedLaundryPickupTimeSlot = index;
-    update();
-  }
-
-  void setPreferableLaundryPickupTime(String time, {bool isUpdate = true}) {
-    _preferableLaundryPickupTime = time;
-    if(isUpdate) update();
-  }
-
-  void updateLaundryDeliveryDateSlot(int index) {
-    _selectedLaundryDeliveryDateSlot = index;
-    update();
-  }
-
-  void updateLaundryDeliveryTimeSlot(int index) {
-    _selectedLaundryDeliveryTimeSlot = index;
-    update();
-  }
-
-  void setPreferableLaundryDeliveryTime(String time, {bool isUpdate = true}) {
-    _preferableLaundryDeliveryTime = time;
-    if(isUpdate) update();
-  }
 
   Future<void> initializeTimeSlot(Store store) async {
     _timeSlots = await checkoutServiceInterface.initializeTimeSlot(store, Get.find<SplashController>().configModel!.scheduleOrderSlotDuration!);
