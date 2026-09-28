@@ -19,7 +19,6 @@ import 'package:suliman/features/pro/controllers/pro_controller.dart';
 import 'package:suliman/features/pro/domain/models/pro_active_offer_model.dart';
 import 'package:suliman/helper/address_helper.dart';
 import 'package:suliman/helper/auth_helper.dart';
-import 'package:suliman/helper/module_helper.dart';
 import 'package:suliman/helper/date_converter.dart';
 import 'package:suliman/helper/network_info.dart';
 import 'package:suliman/helper/price_converter.dart';
@@ -1674,27 +1673,6 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                             }
 
                             String effectiveOrderNote = checkoutController.noteController.text.trim();
-                            bool isLaundryOrder = ModuleHelper.isLaundry(
-                              moduleId: checkoutController.store?.moduleId,
-                              item: (_cartList != null && _cartList!.isNotEmpty) ? _cartList![0]?.item : null,
-                            );
-
-                            if (isLaundryOrder) {
-                              String pickupInfo = checkoutController.preferableLaundryPickupTime.isNotEmpty
-                                  ? '${checkoutController.selectedLaundryPickupDateSlot == 0 ? "اليوم" : checkoutController.selectedLaundryPickupDateSlot == 1 ? "غداً" : "بعد غد"} (${checkoutController.preferableLaundryPickupTime})'
-                                  : '';
-                              String deliveryInfo = checkoutController.preferableLaundryDeliveryTime.isNotEmpty
-                                  ? '${checkoutController.selectedLaundryDeliveryDateSlot == 0 ? "اليوم" : checkoutController.selectedLaundryDeliveryDateSlot == 1 ? "غداً" : checkoutController.selectedLaundryDeliveryDateSlot == 2 ? "بعد غد" : "خلال ${checkoutController.selectedLaundryDeliveryDateSlot} أيام"} (${checkoutController.preferableLaundryDeliveryTime})'
-                                  : '';
-                              List<String> scheduleNotes = [];
-                              if (pickupInfo.isNotEmpty) scheduleNotes.add('موعد استلام الملابس: $pickupInfo');
-                              if (deliveryInfo.isNotEmpty) scheduleNotes.add('موعد تسليم الملابس: $deliveryInfo');
-                              if (scheduleNotes.isNotEmpty) {
-                                String scheduleHeader = '[${scheduleNotes.join(' | ')}]';
-                                effectiveOrderNote = effectiveOrderNote.isNotEmpty ? '$scheduleHeader\n$effectiveOrderNote' : scheduleHeader;
-                              }
-                            }
-
                             PlaceOrderBodyModel placeOrderBody =
                                 PlaceOrderBodyModel(
                               cart: carts,
@@ -1787,9 +1765,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                                   ? ''
                                   : checkoutController.tipController.text
                                       .trim(),
-                              cutlery: isLaundryOrder
-                                  ? 0
-                                  : (Get.find<CartController>().addCutlery ? 1 : 0),
+                              cutlery: Get.find<CartController>().addCutlery ? 1 : 0,
                               unavailableItemNote: Get.find<CartController>()
                                           .notAvailableIndex !=
                                       -1
@@ -2587,15 +2563,6 @@ class CheckoutScreenState extends State<CheckoutScreen> {
       }
     }
 
-    final bool isLaundry = ModuleHelper.isLaundry(
-      moduleId: store?.moduleId ?? ((_cartList != null && _cartList!.isNotEmpty) ? _cartList![0]?.item?.moduleId : null),
-      moduleType: store?.module?.moduleType ?? ((_cartList != null && _cartList!.isNotEmpty) ? _cartList![0]?.item?.moduleType : null),
-      item: (_cartList != null && _cartList!.isNotEmpty) ? _cartList![0]?.item : null,
-    );
-
-    if (isLaundry && checkoutController.orderType != 'take_away' && checkoutController.orderType != 'pickup_center') {
-      deliveryCharge = deliveryCharge * 2;
-    }
 
     return (deliveryCharge / 100).ceilToDouble() * 100;
   }
