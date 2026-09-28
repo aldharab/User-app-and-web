@@ -38,8 +38,13 @@ class AppConstants {
   // static const String baseUrl = 'http://192.168.137.1/adminoldtest';
   // static const String baseUrl = 'http://192.168.8.179/adminoldtest';
   //static const String baseUrl = 'http://192.168.0.179/adminold';
-  static const String baseUrl = 'https://ta.directplace.store';
-  // static const String baseUrl = 'https://sulimanplus.com';
+  static const String defaultBaseUrl = 'https://sulimanplus.com';
+  static const String externalDeveloperBaseUrl = 'https://ta.directplace.store';
+  static const String productionBaseUrl = 'https://sulimanplus.com';
+  static const String finalTestingBaseUrl = 'http://sulimanplus.store';
+  static const String serverBaseUrl = 'suliman_user_server_base_url';
+
+  static String baseUrl = defaultBaseUrl;
 
   static const String categoryUri = '/api/v1/categories';
   static const String homepageUri = '/api/v1/homepage';
